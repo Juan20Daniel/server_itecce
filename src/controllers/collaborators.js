@@ -1,9 +1,55 @@
 const readFile = require('../utils/readFile');
-const {addTypeAndAvatar} = require('../utils/addTypeAndAvatar');
 const separateRegisteredData = require('../utils/separateRegisteredData');
 const getPersonsToUpdate = require('../utils/getPersonsToUpdate');
 const Globals = require('../services/globals');
+const Collaborators = require('../services/collaborators');
+const {addTypeAndAvatar} = require('../utils/addTypeAndAvatar');
 
+
+const getAll = (req, res) => {
+  const offset = req.query.offset;
+  Collaborators.getAll(parseInt(offset), (err, collaborators) => {
+    if(err) return res.status(500).json({success:false, message:err});
+    const nextPage = collaborators.length === 21 ? parseInt(offset) + 20 : false;
+    if(collaborators.length === 21) collaborators.pop();
+    res.status(200).json({
+      success:true,
+      message:'Cantidad de colaboradores: '+collaborators.length, 
+      nextPage,
+      data:collaborators
+    });
+  });
+}
+const getById = (req, res) => {
+  const offset = req.query.offset;
+  const id = req.params.id;
+  Collaborators.getById(id, offset, (err, collaborators) => {
+    if(err) return res.status(500).json({success:false, message:err});
+    const nextPage = collaborators.length === 21 ? parseInt(offset) + 20 : false;
+    if(collaborators.length === 21) collaborators.pop();
+    res.status(200).json({
+      success:true,
+      message:'Cantidad de colaboradores: '+collaborators.length,
+      nextPage,
+      data:collaborators
+    });
+  });
+}
+const getByFullname = (req, res) => {
+  const offset = req.query.offset;
+  const fullname = req.params.fullname.split('-');
+  Collaborators.getByFullname(fullname[0], fullname[1], fullname[2], offset, (err, collaborators) => {
+    if(err) return res.status(500).json({success:false, message:err});
+    const nextPage = collaborators.length === 21 ? parseInt(offset) + 20 : false;
+    if(collaborators.length === 21) collaborators.pop();
+    res.status(200).json({  
+      success:true, 
+      message:'Cantidad de colaboradores: '+collaborators.length, 
+      nextPage,
+      data:collaborators
+    });
+  });
+}
 const insert = async (req, res) => {
   const { buffer } = req.file;
   let collaboratorsToInsert = readFile(buffer);
@@ -44,5 +90,8 @@ const insert = async (req, res) => {
 }
 
 module.exports = {
+  getAll,
+  getById,
+  getByFullname,
   insert
 };

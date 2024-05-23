@@ -1,6 +1,38 @@
+const connection = require('../model/model');
 const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
-const Students = {};
 const getData = require('../utils/getDate');
+const Students = {};
+
+Students.getAll = (offset, result) => {
+  const sql = "SELECT idPerson, name, firstname, lastname, avatar FROM persons WHERE typePerson='STUDENT' LIMIT 21 OFFSET ?";
+  connection.query(sql, [offset], (err, students) => {
+    if(err) {
+      result(err, null);
+    } else {
+      result(null, students);
+    }
+  });
+}
+Students.getById = (id, offset, result) => {
+  const sql = "SELECT idPerson, name, firstname, lastname, avatar FROM persons WHERE typePerson='STUDENT' AND CAST(idPerson AS CHAR) LIKE ? LIMIT 21 OFFSET ?";
+  connection.query(sql, [`${id}%`,parseInt(offset)], (err, students) => {
+    if(err) {
+      result(err, null);
+    } else {
+      result(null, students);
+    }
+  });
+}
+Students.getByFullname = (name, firstname, lastname, offset, result) => {
+  const sql = "SELECT idPerson, name, firstname, lastname, avatar FROM persons WHERE typePerson='STUDENT' AND name LIKE ? AND firstname LIKE ? AND lastname LIKE ? LIMIT 21 OFFSET ?";
+  connection.query(sql, [`${name}%`,`${firstname}%`,`${lastname}%`,parseInt(offset)], (err, students) => {
+    if(err) {
+      result(err, null);
+    } else {
+      result(null, students);
+    }
+  });
+}
 Students.insertStudents = async (personalData, schoolData, studentsToUpdate=[], result) => {
   try {
     await beginTransactionAsync();
