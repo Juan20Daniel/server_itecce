@@ -1,6 +1,9 @@
 const SchoolIdentityCard = require('../services/schoolIdentityCard');
 const {getCurrentDate, normalizeDate } = require('../utils/getDate');
 
+const infoIdentityCard = (req, res) => {
+    console.log('información escolar')
+}
 const GetDate = (req, res) => {
     SchoolIdentityCard.getDate((err, data) => {
         console.log(err);
@@ -79,6 +82,7 @@ const UpdateDate = (req, res) => {
     });
 }
 module.exports = {
+    infoIdentityCard,
     GetDate,
     GetDateById,
     ProcessPrintDate,

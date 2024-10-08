@@ -35,21 +35,7 @@ const getById = (req, res) => {
         });
     });
 }
-const getByFullname = (req, res) => {
-    const offset = req.query.offset;
-    const fullname = req.params.fullname.split('-');
-    Students.getByFullname(fullname[0], fullname[1], fullname[2], offset, (err, students) => {
-        if(err) return res.status(500).json({success:false, message:err});
-        const nextPage = students.length === 21 ? parseInt(offset) + 20 : false;
-        if(students.length === 21) students.pop();
-        res.status(200).json({  
-            success:true, 
-            message:'Cantidad de alumnos: '+students.length, 
-            nextPage,
-            data:students
-        });
-    });
-}
+
 const getNumTotal = (req, res) => {
     Students.getNumTotal((err, result) => {
         if(err) return res.status(500).json({
@@ -140,7 +126,6 @@ const remove = (req, res) => {
 module.exports = {
     getAll,
     getById,
-    getByFullname,
     getNumTotal,
     getInfoScrool,
     insertStudents,

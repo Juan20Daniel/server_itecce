@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { ProcessPrintDate, GetDateById, UpdateDate, InsertDate } = require('../controllers/schoolIdentityCard');
+const { infoIdentityCard, ProcessPrintDate, GetDateById, UpdateDate, InsertDate } = require('../controllers/schoolIdentityCard');
 
+router.get('/info-identity-card', passport.authenticate('jwt', {session:false}), infoIdentityCard)
 router.get('/:id', passport.authenticate('jwt', {session:false}), GetDateById);
 router.post('/', passport.authenticate('jwt', {session:false}), InsertDate);
 router.post('/process-print-date', passport.authenticate('jwt', {session:false}), ProcessPrintDate);
