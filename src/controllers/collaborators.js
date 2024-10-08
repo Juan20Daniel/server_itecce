@@ -5,7 +5,6 @@ const Globals = require('../services/globals');
 const Collaborators = require('../services/collaborators');
 const {addTypeAndAvatar} = require('../utils/addTypeAndAvatar');
 
-
 const getAll = (req, res) => {
   const offset = req.query.offset;
   Collaborators.getAll(parseInt(offset), (err, collaborators) => {
@@ -50,6 +49,20 @@ const getByFullname = (req, res) => {
     });
   });
 }
+const getNumTotal = (req, res) => {
+  Collaborators.getNumTotal((err, result) => {
+    if(err) return res.status(500).json({
+      success:false, 
+      message:'Error al consultar el total de registros',
+      error:err
+    });
+    res.status(200).json({  
+      success:true, 
+      message:'Cantidad total de alumnos', 
+      total:result
+    });
+  });
+}
 const insert = async (req, res) => {
   const { buffer } = req.file;
   let collaboratorsToInsert = readFile(buffer);
@@ -88,10 +101,33 @@ const insert = async (req, res) => {
     });
   });
 }
+const insertCollaborator = (req, res) => {
+  const { person } = req.body;
+  Collaborators.insertCollaborator(person, (err, result) => {
+    if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
+    return res.status(200).json({
+      success:true,
+      message:'Se agrego de forma correcta.'
+    });
+  });
+}
+const remove = (req, res) => {
+  const { id } = req.params;
+  Collaborators.remove(id, (err, result) => {
+    if(err) return res.status(500).json({success:false, message:'No se logro eliminar por un error en el servidor', error:err});
+    return res.status(200).json({
+      success:true, 
+      message:'El colaborador se a eliminado de forma correcta.'
+    });
+  });
+}
 
 module.exports = {
   getAll,
   getById,
   getByFullname,
-  insert
+  getNumTotal,
+  insert,
+  insertCollaborator,
+  remove 
 };

@@ -67,7 +67,9 @@ const verifyOffset = (req, res, next) => {
 }
 const verifyId = (req, res, next) => {
     const id = req.params.id;
-    if(!expretions.id.test(parseInt(id))) return res.status(500).json({success:false, message:'La matrícula no es válida.'});
+    if(!expretions.id.test(id)) {
+        res.status(500).json({success:false, message:'La matrícula no es válida.'});
+    }
     next();
 }
 const verifyFullname = (req, res, next) => {

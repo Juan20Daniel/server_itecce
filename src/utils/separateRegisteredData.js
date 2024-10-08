@@ -1,9 +1,10 @@
-const separateRegisteredData = (typePerson, ids, personsToInsert) => {
+
+const separateRegisteredData = (typePerson, idsDB, personsToInsert) => {
     let notFounds = [];
     let founds = [];
     let toUpdate = [];
     personsToInsert.forEach(person => {
-        let result = ids.find(item => item.idPerson === parseInt(person['Matrícula']));
+        let result = idsDB.find(item => item.idPerson === parseInt(person['Matrícula']));
         if(!result) {
             notFounds.push(person);
         } else if(result.typePerson === typePerson) {

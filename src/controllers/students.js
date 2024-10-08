@@ -50,7 +50,32 @@ const getByFullname = (req, res) => {
         });
     });
 }
-const insert = (req, res) => {
+const getNumTotal = (req, res) => {
+    Students.getNumTotal((err, result) => {
+        if(err) return res.status(500).json({
+            success:false, 
+            message:'Error al consultar el total de registros',
+            error:err
+        });
+        res.status(200).json({  
+            success:true, 
+            message:'Cantidad total de alumnos', 
+            total:result
+        });
+    });
+}
+const getInfoScrool = (req, res) => {
+    const id = req.params.id;
+    Students.getInfoSchool(id, (err, result) => {
+        if(err) return res.status(500).json({success:false, message:'Al consultar la información escolar.', err});
+        res.status(200).json({
+            success: true,
+            message: 'Información escolar',
+            data: result
+        });
+    });
+}
+const insertStudents = (req, res) => {
     const { buffer } = req.file;
     let studensToInsert = readFile(buffer);
     Globals.getInfoDB('STUDENT',(err, info) => {
@@ -89,9 +114,36 @@ const insert = (req, res) => {
         });
     });
 }
+const insertStudent = (req, res) => {
+    const { person } = req.body;
+    Students.insertStudent(person, (err, result) => {
+        if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
+        Students.insertSchoolInfo(person, (err, result) => {
+            if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
+            return res.status(200).json({
+                success:true,
+                message:'Se agrego de forma correcta.'
+            });
+        });
+    });
+}
+const remove = (req, res) => {
+    const { id } = req.params;
+    Students.remove(id, (err, result) => {
+        if(err) return res.status(500).json({success:false, message:'No se logro eliminar por un error en el servidor', error:err});
+        return res.status(200).json({
+            success:true, 
+            message:'El alumno se a eliminado de forma correcta.'
+        });
+    });
+}
 module.exports = {
     getAll,
     getById,
     getByFullname,
-    insert
+    getNumTotal,
+    getInfoScrool,
+    insertStudents,
+    insertStudent,
+    remove
 }

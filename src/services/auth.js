@@ -1,4 +1,4 @@
-const connection = require('../model/model');
+const connection = require('../database/connection');
 const Auth = {};
 
 Auth.getUser = (username, result) => {

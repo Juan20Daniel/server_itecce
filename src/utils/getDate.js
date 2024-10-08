@@ -1,16 +1,22 @@
-const getDate = () => {
-    const actualDate = new Date();
-    const year = actualDate.getFullYear();
-    const month = addZero(actualDate.getMonth() + 1);
-    const day = addZero(actualDate.getDate());
-    const hour = addZero(actualDate.getHours());
-    const minutes = addZero(actualDate.getMinutes());
-    const segunts = addZero(actualDate.getSeconds());
-    const fulldata = `${year}-${month}-${day} ${hour}:${minutes}:${segunts}`;
-    return fulldata;
-}
+const actualDate = new Date();
+
 const addZero = (value) => {
     return value < 10 ? `0${value}` : value
 }
+const getYear = (date) => date.getFullYear();
+const getMonth = (date) => addZero(date.getMonth() + 1);
+const getDay = (date) => addZero(date.getDate());
 
-module.exports = getDate;
+const getFullDate = () => {
+    return actualDate;
+}
+const getCurrentDate = () => {
+    return `${getYear(actualDate)}-${getMonth(actualDate)}-${getDay(actualDate)}`;
+}
+const normalizeDate = (data) => {
+    if(!data) return null; 
+    const dataDB = new Date(data);
+    return `${getYear(dataDB)}-${getMonth(dataDB)}-${getDay(dataDB)}`;
+}
+
+module.exports = {getCurrentDate, getFullDate, normalizeDate };

@@ -1,5 +1,5 @@
-const connection = require('../model/model');
-const getDate = require('../utils/getDate');
+const connection = require('../database/connection');
+const { getFullDate } = require('../utils/getDate');
 const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
 const Globals = {};
 
@@ -18,7 +18,7 @@ Globals.loadPersons = async (personsToInsert, personsToUpdate = [], result) => {
     try {
         await beginTransactionAsync();
         if(personsToUpdate.length) {
-            const fulldate = getDate();
+            const fulldate = getFullDate();
             const sqlUpdate = 'UPDATE persons SET name=?, firstname=?, lastname=?, updated_at=? WHERE idPerson = ?';
             personsToUpdate.forEach(async person => {
                 await queryAsync(sqlUpdate, [person['Nombre'], person['Apellido paterno'], person['Apellido materno'], fulldate, parseInt(person['Matrícula'])]);

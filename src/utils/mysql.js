@@ -1,4 +1,4 @@
-const connection = require('../model/model');
+const connection = require('../database/connection');
 const beginTransactionAsync = () => {
     return new Promise((resolve, reject) => {
         connection.beginTransaction((err) => {
