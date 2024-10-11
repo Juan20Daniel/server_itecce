@@ -14,26 +14,6 @@ Students.getAll = (offset, result) => {
     }
   });
 }
-Students.getById = (id, offset, result) => {
-  const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND CAST(idPerson AS CHAR) LIKE ? LIMIT 21 OFFSET ?";
-  connection.query(sql, [`${id}%`,parseInt(offset)], (err, students) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, students);
-    }
-  });
-}
-Students.getByFullname = (name, firstname, lastname, offset, result) => {
-  const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND name LIKE ? AND firstname LIKE ? AND lastname LIKE ? LIMIT 21 OFFSET ?";
-  connection.query(sql, [`${name}%`,`${firstname}%`,`${lastname}%`,parseInt(offset)], (err, students) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, students);
-    }
-  });
-}
 Students.getNumTotal = (result) => {
   const sql = "SELECT COUNT(*) as total FROM persons WHERE typePerson='STUDENT'";
   connection.query(sql, (err, total) => {
@@ -113,3 +93,26 @@ Students.remove = (id, result) => {
 }
 
 module.exports = Students;
+
+
+
+// Students.getById = (id, offset, result) => {
+//   const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND CAST(idPerson AS CHAR) LIKE ? LIMIT 21 OFFSET ?";
+//   connection.query(sql, [`${id}%`,parseInt(offset)], (err, students) => {
+//     if(err) {
+//       result(err, null);
+//     } else {
+//       result(null, students);
+//     }
+//   });
+// }
+// Students.getByFullname = (name, firstname, lastname, offset, result) => {
+//   const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND name LIKE ? AND firstname LIKE ? AND lastname LIKE ? LIMIT 21 OFFSET ?";
+//   connection.query(sql, [`${name}%`,`${firstname}%`,`${lastname}%`,parseInt(offset)], (err, students) => {
+//     if(err) {
+//       result(err, null);
+//     } else {
+//       result(null, students);
+//     }
+//   });
+// }

@@ -2,7 +2,15 @@ const SchoolIdentityCard = require('../services/schoolIdentityCard');
 const {getCurrentDate, normalizeDate } = require('../utils/getDate');
 
 const infoIdentityCard = (req, res) => {
-    console.log('información escolar')
+    const idPerson = req.params;
+    SchoolIdentityCard.getIdInfoById(idPerson, (err, data) => {
+        if(err) return res.status(500).json({success:false, message:'Error al consultar la información escolar.', error:err});
+        res.status(200).json({
+            success:true,
+            message:'Información escolar',
+            data
+        });
+    });
 }
 const GetDate = (req, res) => {
     SchoolIdentityCard.getDate((err, data) => {

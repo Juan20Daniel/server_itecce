@@ -2,7 +2,19 @@ const connection = require('../database/connection');
 const { rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
 const { getFullDate } = require('../utils/getDate');
 const SchoolIdentityCard = {};
-SchoolIdentityCard.getDate = async (result) => {
+
+SchoolIdentityCard.getIdInfoById = (id, result) => {
+    const sql = `SELECT idPerson, name, firstname, lastname, typePerson, avatar, seccion, group_student FROM 
+    persons LEFT JOIN infoschool ON persons.idPerson = infoschool.idPerson_info WHERE idPerson=?`;
+    connection.query(sql, [id], (err, data) => {
+        if(err) {
+            result(err, null);
+        } else {
+            result(null, data);
+        }
+    });
+}
+SchoolIdentityCard.getDate = (result) => {
     const sql = 'SELECT printed_at, delivered_at, idPerson_ident FROM identityInfo';
     connection.query(sql, (err, data) => {
         if(err) {
@@ -12,7 +24,7 @@ SchoolIdentityCard.getDate = async (result) => {
         }
     });
 }
-SchoolIdentityCard.getDateById = async (id, result) => {
+SchoolIdentityCard.getDateById = (id, result) => {
     const sql = 'SELECT printed_at, delivered_at FROM identityInfo WHERE idPerson_ident = ?';
     connection.query(sql, [id], (err, data) => {
         if(err) {
@@ -43,7 +55,7 @@ SchoolIdentityCard.processPrintDate = async (dataToInsert = [], dataToUpdate = [
         await rollbackAsync();
     }
 }
-SchoolIdentityCard.insertDate = async (id, date, result) => {
+SchoolIdentityCard.insertDate = (id, date, result) => {
     const sql = 'INSERT INTO identityInfo (printed_at, delivered_at, idPerson_ident) VALUES(?,?,?)';
     connection.query(sql, [date,null,id], (err, data) => {
         if(err) {
@@ -53,7 +65,7 @@ SchoolIdentityCard.insertDate = async (id, date, result) => {
         }
     });
 }
-SchoolIdentityCard.updateDate = async (id, date, fieldToUpdate, result) => {
+SchoolIdentityCard.updateDate = (id, date, fieldToUpdate, result) => {
     const fullDate = getFullDate();
     let sql = '';
     const updatePrintDate = 'UPDATE identityInfo SET printed_at=?, delivered_at=null, updated_at=? WHERE idPerson_ident=?';
