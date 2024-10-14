@@ -6,7 +6,7 @@ const SchoolIdentityCard = {};
 SchoolIdentityCard.getIdInfoById = (id, result) => {
     const sql = `SELECT idPerson, name, firstname, lastname, typePerson, avatar, seccion, group_student FROM 
     persons LEFT JOIN infoschool ON persons.idPerson = infoschool.idPerson_info WHERE idPerson=?`;
-    connection.query(sql, [id], (err, data) => {
+    connection.query(sql, parseInt(id), (err, data) => {
         if(err) {
             result(err, null);
         } else {
