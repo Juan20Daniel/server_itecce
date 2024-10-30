@@ -7,6 +7,7 @@ const infoIdentityCard = (req, res) => {
         if(err) return res.status(500).json({success:false, message:'Error al consultar la información de la credencial', error:err});
         let data = {
             ...info[0],
+            typeCard:info[0]?.typePerson,
             isActive:info.length ? true : false
         }
         if(!data.isActive) data.idPerson = parseInt(idPerson);
