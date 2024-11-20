@@ -14,26 +14,7 @@ SchoolIdentityCard.getIdInfoById = (id, result) => {
         }
     });
 }
-SchoolIdentityCard.getDate = (result) => {
-    const sql = 'SELECT printed_at, delivered_at, idPerson_ident FROM identityInfo';
-    connection.query(sql, (err, data) => {
-        if(err) {
-            result(err, null);
-        } else {
-            result(null, data);
-        }
-    });
-}
-SchoolIdentityCard.getDateById = (id, result) => {
-    const sql = 'SELECT printed_at, delivered_at FROM identityInfo WHERE idPerson_ident = ?';
-    connection.query(sql, [id], (err, data) => {
-        if(err) {
-            result(err, null);
-        } else {
-            result(null, data);
-        }
-    });
-}
+
 SchoolIdentityCard.processPrintDate = async (dataToInsert = [], dataToUpdate = [], date, result) => {
     try {
         await beginTransactionAsync();
@@ -55,30 +36,4 @@ SchoolIdentityCard.processPrintDate = async (dataToInsert = [], dataToUpdate = [
         await rollbackAsync();
     }
 }
-SchoolIdentityCard.insertDate = (id, date, result) => {
-    const sql = 'INSERT INTO identityInfo (printed_at, delivered_at, idPerson_ident) VALUES(?,?,?)';
-    connection.query(sql, [date,null,id], (err, data) => {
-        if(err) {
-            result(err, null);
-        } else {
-            result(null, data);
-        }
-    });
-}
-SchoolIdentityCard.updateDate = (id, date, fieldToUpdate, result) => {
-    const fullDate = getFullDate();
-    let sql = '';
-    const updatePrintDate = 'UPDATE identityInfo SET printed_at=?, delivered_at=null, updated_at=? WHERE idPerson_ident=?';
-    const updateDeliveryDate = 'UPDATE identityInfo SET delivered_at=?, updated_at=? WHERE idPerson_ident=?';
-    if(fieldToUpdate === 'printed_at') sql = updatePrintDate;
-    if(fieldToUpdate === 'delivered_at') sql = updateDeliveryDate;
-    connection.query(sql, [date,fullDate,id], (err, data) => {
-        if(err) {
-            result(err, null);
-        } else {
-            result(null, data);
-        }
-    });
-}
-
 module.exports = SchoolIdentityCard;

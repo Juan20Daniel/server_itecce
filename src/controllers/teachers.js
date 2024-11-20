@@ -5,64 +5,6 @@ const getPersonsToUpdate = require('../utils/getPersonsToUpdate');
 const Teachers = require('../services/teachers');
 const Globals = require('../services/globals');
 
-const getAll = (req, res) => {
-  const offset = req.query.offset;
-  Teachers.getAll(parseInt(offset), (err, teachers) => {
-    if(err) return res.status(500).json({success:false, message:err});
-    const nextPage = teachers.length === 21 ? parseInt(offset) + 20 : false;
-    if(teachers.length === 21) teachers.pop();
-    res.status(200).json({
-      success:true,
-      message:'Cantidad de maestros: '+teachers.length, 
-      nextPage,
-      data:teachers
-    });
-  });
-}
-const getById = (req, res) => {
-  const offset = req.query.offset;
-  const id = req.params.id;
-  Teachers.getById(id, offset, (err, teachers) => {
-    if(err) return res.status(500).json({success:false, message:err});
-    const nextPage = teachers.length === 21 ? parseInt(offset) + 20 : false;
-    if(teachers.length === 21) teachers.pop();
-    res.status(200).json({
-      success:true,
-      message:'Cantidad de maestros: '+teachers.length,
-      nextPage,
-      data:teachers
-    });
-  });
-}
-const getByFullname = (req, res) => {
-  const offset = req.query.offset;
-  const fullname = req.params.fullname.split('-');
-  Teachers.getByFullname(fullname[0], fullname[1], fullname[2], offset, (err, teachers) => {
-    if(err) return res.status(500).json({success:false, message:err});
-    const nextPage = teachers.length === 21 ? parseInt(offset) + 20 : false;
-    if(teachers.length === 21) teachers.pop();
-    res.status(200).json({  
-      success:true, 
-      message:'Cantidad de maestros: '+teachers.length, 
-      nextPage,
-      data:teachers
-    });
-  });
-}
-const getNumTotal = (req, res) => {
-  Teachers.getNumTotal((err, result) => {
-    if(err) return res.status(500).json({
-      success:false, 
-      message:'Error al consultar el total de registros',
-      error:err
-    });
-    res.status(200).json({  
-      success:true, 
-      message:'Cantidad total de maestros', 
-      total:result
-    });
-  });
-}
 const insert = async (req, res) => {
   const { buffer } = req.file;
   let teachersToInsert = readFile(buffer);
@@ -122,10 +64,6 @@ const remove = (req, res) => {
   });
 }
 module.exports = {
-  getAll,
-  getById,
-  getByFullname,
-  getNumTotal,
   insert,
   insertTeacher,
   remove

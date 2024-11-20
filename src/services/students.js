@@ -4,36 +4,6 @@ const { getFullDate } = require('../utils/getDate');
 const { getAvatar } = require('../utils/addTypeAndAvatar');
 const Students = {};
 
-Students.getAll = (offset, result) => {
-  const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' LIMIT 21 OFFSET ?";
-  connection.query(sql, [offset], (err, students) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, students);
-    }
-  });
-}
-Students.getNumTotal = (result) => {
-  const sql = "SELECT COUNT(*) as total FROM persons WHERE typePerson='STUDENT'";
-  connection.query(sql, (err, total) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, total[0].total);
-    }
-  });
-}
-Students.getInfoSchool = (id, result) => {
-  const sql = 'SELECT idPerson_info, seccion, group_student FROM infoschool WHERE idPerson_info = ?';
-  connection.query(sql, [id], (err, info) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, info);
-    }
-  });
-}
 Students.insertStudents = async (personalData, schoolData, studentsToUpdate=[], result) => {
   try {
     await beginTransactionAsync();
@@ -81,38 +51,5 @@ Students.insertSchoolInfo = (person, result) => {
     }
   });
 }
-Students.remove = (id, result) => {
-  const sql = 'DELETE FROM persons WHERE idPerson = ?'
-  connection.query(sql, [id], (err, res) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, res.affectedRows);
-    }
-  });
-}
 
 module.exports = Students;
-
-
-
-// Students.getById = (id, offset, result) => {
-//   const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND CAST(idPerson AS CHAR) LIKE ? LIMIT 21 OFFSET ?";
-//   connection.query(sql, [`${id}%`,parseInt(offset)], (err, students) => {
-//     if(err) {
-//       result(err, null);
-//     } else {
-//       result(null, students);
-//     }
-//   });
-// }
-// Students.getByFullname = (name, firstname, lastname, offset, result) => {
-//   const sql = "SELECT idPerson, name, firstname, lastname, typePerson, avatar FROM persons WHERE typePerson='STUDENT' AND name LIKE ? AND firstname LIKE ? AND lastname LIKE ? LIMIT 21 OFFSET ?";
-//   connection.query(sql, [`${name}%`,`${firstname}%`,`${lastname}%`,parseInt(offset)], (err, students) => {
-//     if(err) {
-//       result(err, null);
-//     } else {
-//       result(null, students);
-//     }
-//   });
-// }
