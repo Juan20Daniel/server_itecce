@@ -22,4 +22,4 @@ const updateValidityPeriods = (req, res) => {
 module.exports = {
     getValidityPeriods,
     updateValidityPeriods
-}   
+}
