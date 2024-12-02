@@ -1,11 +1,10 @@
 const connection = require('../database/connection');
-const { getFullDate } = require('../utils/getDate');
 const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
 const Globals = {};
 
-Globals.getInfoDB = (typePerson, result) => {
+Globals.getInfoDB = (type, result) => {
     const sql = 'CALL getInfo(?)';
-    connection.query(sql, [typePerson], (err, info) => {
+    connection.query(sql, [type], (err, info) => {
         if(err) {
             result(err, null);
         } else {
@@ -14,22 +13,21 @@ Globals.getInfoDB = (typePerson, result) => {
     });
 }
 
-Globals.loadPersons = async (personsToInsert, personsToUpdate = [], result) => {
+Globals.loadClients = async (clientsToInsert, clientsToUpdate = [], result) => {
     try {
         await beginTransactionAsync();
-        if(personsToUpdate.length) {
-            const fulldate = getFullDate();
-            const sqlUpdate = 'UPDATE persons SET name=?, firstname=?, lastname=?, updated_at=? WHERE idPerson = ?';
-            personsToUpdate.forEach(async person => {
-                await queryAsync(sqlUpdate, [person['Nombre'], person['Apellido paterno'], person['Apellido materno'], fulldate, parseInt(person['Matrícula'])]);
+        if(clientsToUpdate.length) {
+            const sql_update = 'UPDATE clients SET name=?, firstname=?, lastname=? WHERE idClient = ?';
+            clientsToUpdate.forEach(async client => {
+                await queryAsync(sql_update, [client['Nombre'], client['Apellido paterno'], client['Apellido materno'], parseInt(client['Matrícula'])]);
             });
         }
-        if(personsToInsert.length) {
-            const sqlInsert = 'INSERT INTO persons (idPerson,name,firstname,lastname,typePerson,avatar) VALUES ?'
-            await queryAsync(sqlInsert, [personsToInsert]);
+        if(clientsToInsert.length) {
+            const sql_insert = 'INSERT INTO clients (idClient,name,firstname,lastname,idSectionClients) VALUES ?'
+            await queryAsync(sql_insert, [clientsToInsert]);
         }
         await commitAsync();
-        result(null, {personsRegistered:personsToInsert.length, personsUpdated:personsToUpdate.length});
+        result(null, {clientsRegistered:clientsToInsert.length, clientsUpdated:clientsToUpdate.length});
     } catch (error) {
         result(error, null);
         await rollbackAsync();

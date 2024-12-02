@@ -1,4 +1,3 @@
-const { getAvatar } = require('./addTypeAndAvatar');
 const splitData = (students) => {
     let schoolData = [];
     let personalData = [];
@@ -8,13 +7,12 @@ const splitData = (students) => {
             name:student['Nombre'], 
             firstname:student['Apellido paterno'],
             lastname:student['Apellido materno'],
-            type:'STUDENT',
-            avatar:getAvatar()
+            idSectionClients:1,
         });
         schoolData.push({
             seccion:student['Sección'],
-            group_student:student['Grupo'],
-            idPer_infoStuden:student['Matrícula']
+            groupStudent:student['Grupo'],
+            idClientInfo:student['Matrícula']
         });
     });
     return {schoolData, personalData};

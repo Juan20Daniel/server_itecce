@@ -1,26 +1,23 @@
 const connection = require('../database/connection');
 const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
-const { getFullDate } = require('../utils/getDate');
-const { getAvatar } = require('../utils/addTypeAndAvatar');
 const Students = {};
 
 Students.insertStudents = async (personalData, schoolData, studentsToUpdate=[], result) => {
   try {
     await beginTransactionAsync();
     if(studentsToUpdate.length) {
-      const fulldate = getFullDate();
-      let sql_persons = 'UPDATE persons SET name=?, firstname=?, lastname=?, updated_at=? WHERE idPerson = ?';
-      let sql_school = 'UPDATE infoschool SET seccion=?, group_student=? WHERE idPerson_info = ?';
+      let sql_update_personal_data = 'UPDATE clients SET name=?, firstname=?, lastname=? WHERE idClient = ?';
+      let sql_update_school_data = 'UPDATE infostudens SET seccion=?, groupStudent=? WHERE idClientInfo = ?';
       studentsToUpdate.forEach(async (student) => {
-        await queryAsync(sql_persons, [student['Nombre'], student['Apellido paterno'], student['Apellido materno'], fulldate, parseInt(student['Matrícula'])]);
-        await queryAsync(sql_school, [student['Sección'], student['Grupo'], parseInt(student['Matrícula'])]);
+        await queryAsync(sql_update_personal_data, [student['Nombre'], student['Apellido paterno'], student['Apellido materno'], parseInt(student['Matrícula'])]);
+        await queryAsync(sql_update_school_data, [student['Sección'], student['Grupo'], parseInt(student['Matrícula'])]);
       });
     }
     if(personalData.length) {
-      const sql_personalData = 'INSERT INTO persons (idPerson,name,firstname,lastname,typePerson,avatar) VALUES ?';
-      await queryAsync(sql_personalData, [personalData]);
-      const sql_schoolData = 'INSERT INTO infoSchool (seccion, group_student, idPerson_info) VALUES ?';
-      await queryAsync(sql_schoolData, [schoolData]);
+      const sql_insert_personal_data = 'INSERT INTO clients (idClient,name,firstname,lastname,idSectionClients) VALUES ?';
+      await queryAsync(sql_insert_personal_data, [personalData]);
+      const sql_insert_school_data = 'INSERT INTO infostudens (seccion, groupStudent, idClientInfo) VALUES ?';
+      await queryAsync( sql_insert_school_data, [schoolData]);
     }
     await commitAsync();
     result(null, {newStudents:personalData.length, updatedStudents:studentsToUpdate.length});
@@ -29,10 +26,10 @@ Students.insertStudents = async (personalData, schoolData, studentsToUpdate=[], 
     await rollbackAsync();
   }
 }
-Students.insertStudent = (person, result) => {
-  const { id,name,firstname,lastname,typePerson } = person;
-  const sql = 'INSERT INTO persons ( idPerson, name, firstname, lastname, typePerson, avatar) VALUES(?,?,?,?,?,?)';
-  connection.query(sql, [id,name,firstname,lastname,typePerson,getAvatar()], (err, data) => {
+Students.insertStudent = (client, result) => {
+  const { id,name,firstname,lastname,idSectionClients } = client;
+  const sql = 'INSERT INTO clients (idClient, name, firstname, lastname, idSectionClients) VALUES(?,?,?,?,?)';
+  connection.query(sql, [id,name,firstname,lastname,idSectionClients], (err, data) => {
     if(err) {
       result(err, null);
     } else {
@@ -42,7 +39,7 @@ Students.insertStudent = (person, result) => {
 }
 Students.insertSchoolInfo = (person, result) => {
   const { id, area, group } = person;
-  const sql = 'INSERT INTO infoschool ( seccion, group_student, idPerson_info) VALUES(?,?,?)';
+  const sql = 'INSERT INTO infostudens (seccion,groupStudent,idClientInfo) VALUES(?,?,?)';
   connection.query(sql, [area, group, id], (err, data) => {
     if(err) {
       result(err, null);

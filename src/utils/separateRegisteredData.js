@@ -1,16 +1,16 @@
 
-const separateRegisteredData = (typePerson, idsDB, personsToInsert) => {
+const separateRegisteredData = (type, idsDB, clientsToInsert) => {
     let notFounds = [];
     let founds = [];
     let toUpdate = [];
-    personsToInsert.forEach(person => {
-        let result = idsDB.find(item => item.idPerson === parseInt(person['Matrícula']));
+    clientsToInsert.forEach(client => {
+        let result = idsDB.find(id => id.idClient === parseInt(client['Matrícula']));
         if(!result) {
-            notFounds.push(person);
-        } else if(result.typePerson === typePerson) {
-            toUpdate.push(person);
+            notFounds.push(client);
+        } else if(result.idSectionClients === type) {
+            toUpdate.push(client);
         } else {
-            founds.push(person);
+            founds.push(client);
         }
     });
     return {toUpdate, withIdRegistered:founds, notRegistered:notFounds};

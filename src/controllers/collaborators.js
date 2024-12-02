@@ -1,24 +1,24 @@
 const readFile = require('../utils/readFile');
 const separateRegisteredData = require('../utils/separateRegisteredData');
-const getPersonsToUpdate = require('../utils/getPersonsToUpdate');
+const getClientsToUpdate = require('../utils/getClientsToUpdate');
 const Globals = require('../services/globals');
 const Collaborators = require('../services/collaborators');
-const {addTypeAndAvatar} = require('../utils/addTypeAndAvatar');
+const { addType } = require('../utils/addType');
 
 const insert = async (req, res) => {
   const { buffer } = req.file;
   let collaboratorsToInsert = readFile(buffer);
-  Globals.getInfoDB('COLABORATOR',(err, info_db) => {
+  Globals.getInfoDB(3,(err, info_db) => {
     if(err) return res.status(500).json({success:false, message:err});
     const idsDB =  info_db[0];
-    const personsDB = info_db[1];
+    const clientsDB = info_db[1];
     //Verificamos si hay matrículas registradas en la base de datos.
     if(idsDB.length) {
       //Separamos los maestros que tienen una matrícula que ya esta registrada en la base de datos de los que aun no estan registrados.
-      var { toUpdate, withIdRegistered, notRegistered } = separateRegisteredData('COLABORATOR', idsDB, collaboratorsToInsert);
+      var { toUpdate, withIdRegistered, notRegistered } = separateRegisteredData(3, idsDB, collaboratorsToInsert);
       collaboratorsToInsert = notRegistered;
       //Sacamos a los maestros que ya existen y que nada mas se van a actualizar
-      var collaboratorsToUpdate = getPersonsToUpdate('collaborators', toUpdate, personsDB);
+      var collaboratorsToUpdate = getClientsToUpdate('collaborators',toUpdate,clientsDB);
       if(!collaboratorsToInsert.length && !collaboratorsToUpdate.length) {
         return res.status(200).json({
           success:true, 
@@ -29,14 +29,14 @@ const insert = async (req, res) => {
         });
       }
     }
-    const result = addTypeAndAvatar(collaboratorsToInsert, 'COLABORATOR');
-    Globals.loadPersons(result, collaboratorsToUpdate, (err, inserts) => {
+    const result = addType(collaboratorsToInsert, 3);
+    Globals.loadClients(result, collaboratorsToUpdate, (err, inserts) => {
       if(err) return res.status(500).json({success:false, message:err});
       return res.status(200).json({
         success:true,
         message:'Archivo cargado.',
-        registered:inserts.personsRegistered,
-        updateds:inserts.personsUpdated,
+        registered:inserts.clientsRegistered,
+        updateds:inserts.clientsUpdated,
         //Los que existen pero pertenecen otra sección.
         inOtherSection:withIdRegistered??[]
       });
