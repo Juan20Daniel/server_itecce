@@ -9,7 +9,10 @@ const insert = async (req, res) => {
   const { buffer } = req.file;
   let teachersToInsert = readFile(buffer);
   Globals.getInfoDB(2,(err, info_db) => {
-    if(err) return res.status(500).json({success:false, message:'Error al consultar la información', error:err});
+    if(err) {
+      const errorMessage = 'Error al consultar la información'
+      return res.status(500).json({success:false, message:errorMessage, error:err});
+    }
     const idsDB =  info_db[0];
     const clientsDB = info_db[1];
     //Verificamos si hay matrículas registradas en la base de datos.

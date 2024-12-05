@@ -47,7 +47,7 @@ const chackIds = (data) => {
         }
     }
 }
-const verifyFile = (req, res, next) => {
+const verifyExcel = (req, res, next) => {
     if(!req.file) return res.status(500).json({success:false, message:'No se ha adjuntado ningun archivo.'});
     const { originalname, buffer } = req.file;
     const { section } = req.body;
@@ -59,27 +59,6 @@ const verifyFile = (req, res, next) => {
     if(hasDulicates) return res.status(500).json({success:false, message:`La matrículas ${hasDulicates} esta repetida en el archivo.`});
     next();
 }
-const verifyOffset = (req, res, next) => {
-    if(!req.query.hasOwnProperty('offset')) return res.status(500).json({success:false, message:'La url no es válida.'});
-    const offset = req.query.offset;
-    if(!expretions.offset.test(parseInt(offset))) return res.status(500).json({success:false, message:'El rango no es válido.'});
-    next();
-}
-const verifyId = (req, res, next) => {
-    const id = req.params.id;
-    if(!expretions.id.test(id)) {
-        res.status(500).json({success:false, message:'La matrícula no es válida.'});
-    }
-    next();
-}
-const verifyFullname = (req, res, next) => {
-    const fullname = req.params.fullname;
-    if(!expretions.fullname_search.test(fullname)) return res.status(500).json({success:false, message:'El nombre no es válida.'});
-    next();
-}
 module.exports = {
-    verifyFile,
-    verifyOffset,
-    verifyId,
-    verifyFullname
+    verifyExcel,
 }
