@@ -24,16 +24,21 @@ const getTamplates = (req, res) => {
     });
 }
 const updateTamplete = (req, res) => {
-    const { type, idSection } = req.body;
-    const imgBuffer = req.file.buffer;
-    Templates.update(imgBuffer, type, idSection, (err, data) => {
+    const idSection = req.params.idSection;
+    const { type } = req.body;
+    const file = req.file;
+    const dataToUpdate = {
+        imgBuffer: file ? file.buffer : null,
+        type,
+    }
+    Templates.update(dataToUpdate, idSection, (err, data) => {
         if(err) {
             const errorMessage = 'Error al actualizar la plantilla de credencial';
             return res.status(500).json({success:false, message:errorMessage, error:err});
         }
         return res.status(200).json({
             success:true,
-            message:'Se actualizo la plantill de credencial'
+            message:'Se actualizo la plantill de credencial de forma correcta'
         });
     });
 }

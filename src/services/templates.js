@@ -8,12 +8,10 @@ Templates.selectAll = (result) => {
         return result(null, data);   
     });
 }
-Templates.update = (imgBuffer, type, idSection, result) => {
-    const sql = {
-        'imgFront':'UPDATE idtemplates SET imgFront=? WHERE idSectionIdTemp = ?',
-        'imgReverse':'UPDATE idtemplates SET imgReverse=? WHERE idSectionIdTemp = ?'
-    }
-    connection.query(sql[type], [imgBuffer, idSection], (err, data) => {
+Templates.update = (dataToUpdate, idSection, result) => {
+
+    const sql = `UPDATE idtemplates SET ${dataToUpdate.type}=? WHERE idSectionIdTemp = ?`
+    connection.query(sql, [dataToUpdate.imgBuffer, idSection], (err, data) => {
         if(err) return result(err, null);
         return result(null, data);   
     });
