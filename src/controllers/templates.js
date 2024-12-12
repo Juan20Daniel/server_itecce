@@ -31,14 +31,15 @@ const updateTamplete = (req, res) => {
         imgBuffer: file ? file.buffer : null,
         type,
     }
-    Templates.update(dataToUpdate, idSection, (err, data) => {
+    Templates.update(dataToUpdate, idSection, (err, dataDB) => {
         if(err) {
             const errorMessage = 'Error al actualizar la plantilla de credencial';
             return res.status(500).json({success:false, message:errorMessage, error:err});
         }
         return res.status(200).json({
             success:true,
-            message:'Se actualizo la plantill de credencial de forma correcta'
+            message:'Se actualizo la plantilla de credencial de forma correcta',
+            data:file ? file.buffer.toString('base64') : null
         });
     });
 }
