@@ -1,18 +1,20 @@
 const connection = require('../database/connection');
-const { beginTransactionAsync, queryAsync, commitAsync, rollbackAsyn } = require('../utils/mysql');
+const { beginTransactionAsync, queryAsync, commitAsync, rollbackAsync } = require('../utils/mysql');
 const ValidityPeriods = {}
 
-ValidityPeriods.selectAll = (result) => {
-    const sql = 'SELECT period, type, idSectionValid AS idValidityPeriod FROM sections INNER JOIN validityPeriod ON sections.idSection = validityPeriod.idSectionValid;';
-    connection.query(sql, (err, data) => {
-        if(err) {
-            result(err, null);
-        } else {
-            result(null, data);
-        }
-    });
+ValidityPeriods.selectAll = () => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT period, type, idSectionValid AS idValidityPeriod FROM sections INNER JOIN validityPeriod ON sections.idSection = validityPeriod.idSectionValid;';
+        connection.query(sql, (err, data) => {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    })
 }
-ValidityPeriods.updateAll = async (validityPeriods, result) => {
+ValidityPeriods.updateAll = async (validityPeriods) => {
     try {
         const { students, teachers, collaborators } = validityPeriods;
         await beginTransactionAsync();
@@ -21,10 +23,10 @@ ValidityPeriods.updateAll = async (validityPeriods, result) => {
         await queryAsync(sql, [teachers, 2]);
         await queryAsync(sql, [collaborators, 3]);
         await commitAsync();
-        result(null, true);
+        return 'Se actualizo la vigencia de las credenciales.';
     } catch (error) {
-        result(err, null);
-        await rollbackAsyn();
+        await rollbackAsync();
+        throw new Error('Error al actualizar la vigencia de las credenciales');
     }
 }
 module.exports = ValidityPeriods;

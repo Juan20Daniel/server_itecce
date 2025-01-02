@@ -1,14 +1,8 @@
 const Templates = require('../services/templates');
 
-const getTamplates = (req, res) => {
-    Templates.selectAll((err, data) => {
-        if(err) {
-            return res.status(500).json({
-                success:false, 
-                message:'Error al obtener las plantillas de credenciales', 
-                error:err
-            });
-        }
+const getTamplates = async (req, res) => {
+    try {
+        const data = await Templates.selectAll();
         const tamplatesBase64 = data.map(tamplateDB => {
             return {
                 ...tamplateDB,
@@ -21,27 +15,32 @@ const getTamplates = (req, res) => {
             message:'Plantillas de credenciales',
             tamplatesBase64
         });
-    });
-}
-const updateTamplete = (req, res) => {
-    const idSection = req.params.idSection;
-    const { type } = req.body;
-    const file = req.file;
-    const dataToUpdate = {
-        imgBuffer: file ? file.buffer : null,
-        type,
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:'Error al obtener las plantillas de credenciales', 
+        });
     }
-    Templates.update(dataToUpdate, idSection, (err, dataDB) => {
-        if(err) {
-            const errorMessage = 'Error al actualizar la plantilla de credencial';
-            return res.status(500).json({success:false, message:errorMessage, error:err});
+}
+const updateTamplete = async (req, res) => {
+    try {
+        const idSection = req.params.idSection;
+        const { type } = req.body;
+        const file = req.file;
+        const dataToUpdate = {
+            imgBuffer: file ? file.buffer : null,
+            type,
         }
-        return res.status(200).json({
-            success:true,
+        await Templates.update(dataToUpdate, idSection);
+        res.status(200).json({
             message:'Se actualizo la plantilla de credencial de forma correcta',
             data:file ? file.buffer.toString('base64') : null
         });
-    });
+    } catch (error) {
+        console.log(error);
+        const errorMessage = 'Error al actualizar la plantilla de credencial';
+        res.status(500).json({message:errorMessage});
+    }
 }
 module.exports = {
     getTamplates,

@@ -46,15 +46,17 @@ const insert = async (req, res) => {
     });
   });
 }
-const insertTeacher = (req, res) => {
-  const { person } = req.body;
-  Teachers.insertTeacher(person, (err, result) => {
-    if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
-    return res.status(200).json({
-      success:true,
-      message:'Se agrego de forma correcta.'
+const insertTeacher = async (req, res) => {
+  try {
+    const { person } = req.body;
+    await Teachers.insertTeacher(person);
+    res.status(200).json({
+      message:'Se agregó de forma correcta.'
     });
-  });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message:'No se logro insetar'});
+  }
 }
 
 module.exports = {

@@ -7,11 +7,14 @@ module.exports = (passport) => {
     let ops = {};
     ops.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
     ops.secretOrKey = Keys.secretKeyJwt;
-    passport.use(new JwtStrategy(ops, (jwt_payload, done) => {
-        Auth.getUser(jwt_payload.data, (err, user) => {
-            if(err) return done(err, false);
+    passport.use(new JwtStrategy(ops, async (jwt_payload, done) => {
+        try {
+            const user = await Auth.getUser(jwt_payload.data);
             if(user) return done(null, user);
             return done(null, false);
-        });
+        } catch (error) {
+            console.log(error);
+            done(err, false);
+        }
     }));
 }
