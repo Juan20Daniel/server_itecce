@@ -20,7 +20,6 @@ const infoIdentityCard = (req, res) => {
         }
         if(!data.isActive) data.idClient = parseInt(idClient);
         res.status(200).json({
-            success:true,
             message:'Información para credencial escolar',
             data
         });

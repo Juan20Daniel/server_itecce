@@ -1,4 +1,3 @@
-const connection = require('../database/connection');
 const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
 const Students = {};
 
@@ -25,28 +24,6 @@ Students.insertStudents = async (personalData, schoolData, studentsToUpdate=[], 
     result(error, null)
     await rollbackAsync();
   }
-}
-Students.insertStudent = (client, result) => {
-  const { id,name,firstname,lastname,idSectionClients } = client;
-  const sql = 'INSERT INTO clients (idClient, name, firstname, lastname, idSectionClients) VALUES(?,?,?,?,?)';
-  connection.query(sql, [id,name,firstname,lastname,idSectionClients], (err, data) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, data);
-    }
-  });
-}
-Students.insertSchoolInfo = (person, result) => {
-  const { id, area, group } = person;
-  const sql = 'INSERT INTO infostudens (seccion,groupStudent,idClientInfo) VALUES(?,?,?)';
-  connection.query(sql, [area, group, id], (err, data) => {
-    if(err) {
-      result(err, null);
-    } else {
-      result(null, data);
-    }
-  });
 }
 
 module.exports = Students;

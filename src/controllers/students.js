@@ -20,7 +20,6 @@ const insertStudents = (req, res) => {
             var studentsToUpdate = getClientsToUpdate('students',toUpdate,studentsDB);
             if(!studensToInsert.length && !studentsToUpdate.length) {
                 return res.status(200).json({
-                    success:true,
                     message:'Archivo cargado.', 
                     registered:0,
                     updateds:0,
@@ -35,7 +34,6 @@ const insertStudents = (req, res) => {
         Students.insertStudents(arraysPersonalData, arraysSchoolData, studentsToUpdate, (err, result) => {
             if(err) return res.status(500).json({success:false, message:'Error desconocido', err});
             res.status(200).json({
-                success:true, 
                 message:'Archivo cargado.',
                 registered:result.newStudents,
                 updateds:result.updatedStudents,
@@ -45,21 +43,8 @@ const insertStudents = (req, res) => {
         });
     });
 }
-const insertStudent = (req, res) => {
-    const { person } = req.body;
-    Students.insertStudent(person, (err, result) => {
-        if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
-        Students.insertSchoolInfo(person, (err, result) => {
-            if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
-            return res.status(200).json({
-                success:true,
-                message:'Se agrego de forma correcta.'
-            });
-        });
-    });
-}
+
 
 module.exports = {
     insertStudents,
-    insertStudent,
 }

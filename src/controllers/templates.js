@@ -11,7 +11,6 @@ const getTamplates = async (req, res) => {
             }
         });
         res.status(200).json({
-            success:true,
             message:'Plantillas de credenciales',
             tamplatesBase64
         });

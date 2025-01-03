@@ -3,8 +3,8 @@ const { beginTransactionAsync, queryAsync, commitAsync, rollbackAsync } = requir
 const ValidityPeriods = {}
 
 ValidityPeriods.selectAll = () => {
+    const sql = 'SELECT period, type, idSectionValid AS idValidityPeriod FROM sections INNER JOIN validityPeriod ON sections.idSection = validityPeriod.idSectionValid;';
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT period, type, idSectionValid AS idValidityPeriod FROM sections INNER JOIN validityPeriod ON sections.idSection = validityPeriod.idSectionValid;';
         connection.query(sql, (err, data) => {
             if(err) {
                 reject(err);

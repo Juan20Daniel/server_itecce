@@ -1,9 +1,8 @@
 const readFile = require('../utils/readFile');
 const separateRegisteredData = require('../utils/separateRegisteredData');
 const getClientsToUpdate = require('../utils/getClientsToUpdate');
-const Globals = require('../services/globals');
-const Collaborators = require('../services/collaborators');
 const { addType } = require('../utils/addType');
+const Globals = require('../services/globals');
 
 const insert = async (req, res) => {
   const { buffer } = req.file;
@@ -21,7 +20,6 @@ const insert = async (req, res) => {
       var collaboratorsToUpdate = getClientsToUpdate('collaborators',toUpdate,clientsDB);
       if(!collaboratorsToInsert.length && !collaboratorsToUpdate.length) {
         return res.status(200).json({
-          success:true, 
           message:'Archivo cargado.', 
           registered:0, 
           updateds:0,
@@ -33,7 +31,6 @@ const insert = async (req, res) => {
     Globals.loadClients(result, collaboratorsToUpdate, (err, inserts) => {
       if(err) return res.status(500).json({success:false, message:err});
       return res.status(200).json({
-        success:true,
         message:'Archivo cargado.',
         registered:inserts.clientsRegistered,
         updateds:inserts.clientsUpdated,
@@ -43,17 +40,6 @@ const insert = async (req, res) => {
     });
   });
 }
-const insertCollaborator = (req, res) => {
-  const { person } = req.body;
-  Collaborators.insertCollaborator(person, (err, result) => {
-    if(err) return res.status(500).json({success:false, message:'No se logro insetar', error:err});
-    return res.status(200).json({
-      success:true,
-      message:'Se agrego de forma correcta.'
-    });
-  });
-}
 module.exports = {
-  insert,
-  insertCollaborator,
+  insert
 };

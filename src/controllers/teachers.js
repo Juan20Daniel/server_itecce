@@ -1,7 +1,6 @@
 const readFile = require('../utils/readFile');
 const separateRegisteredData = require('../utils/separateRegisteredData');
 const getClientsToUpdate = require('../utils/getClientsToUpdate');
-const Teachers = require('../services/teachers');
 const Globals = require('../services/globals');
 const {addType} = require('../utils/addType');
 
@@ -24,7 +23,6 @@ const insert = async (req, res) => {
       var teachersToUpdate = getClientsToUpdate('teachers',toUpdate,clientsDB);
       if(!teachersToInsert.length && !teachersToUpdate.length) {
         return res.status(200).json({
-          success:true,
           message:'Archivo cargado.',
           registered:0,
           updateds:0,
@@ -36,7 +34,6 @@ const insert = async (req, res) => {
     Globals.loadClients(result, teachersToUpdate, (err, inserts) => {
       if(err) return res.status(500).json({success:false, message:err});
       return res.status(200).json({
-        success:true,
         message:'Archivo cargado.',
         registered:inserts.clientsRegistered,
         updateds:inserts.clientsUpdated,
@@ -46,20 +43,7 @@ const insert = async (req, res) => {
     });
   });
 }
-const insertTeacher = async (req, res) => {
-  try {
-    const { person } = req.body;
-    await Teachers.insertTeacher(person);
-    res.status(200).json({
-      message:'Se agregó de forma correcta.'
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({message:'No se logro insetar'});
-  }
-}
 
 module.exports = {
-  insert,
-  insertTeacher
+  insert
 };
