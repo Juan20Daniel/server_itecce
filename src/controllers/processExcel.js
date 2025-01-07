@@ -4,13 +4,39 @@ const splitData = require('../utils/splitData');
 const transformToArrays = require('../utils/transformToArrays');
 const getClientsToUpdate = require('../utils/getClientsToUpdate');
 const Students = require('../services/students');
-const Globals = require('../services/globals');
+const Clients = require('../services/clients');
+const types = {
+    'students':1,
+    'teachers':2,
+    'collaborators':3
+}
+const processExcel = async (req, res) => {
+    try {
+        const { buffer } = req.file;
+        const section = req.body.section;
+        const typeSection = types[section];
+        const idsDB = await Clients.getIds();
+        const clientsDB = await Clients.getClientsByType(typeSection);
+        let excelData = readFile(buffer);
 
-const processExcel = (req, res) => {
-    // const { buffer } = req.file;
-    // let studensToInsert = readFile(buffer);
-    // Globals.getInfoDB(1,(err, info) => {
-    //     if(err) return res.status(500).json({success:false, message:err});
+        if(idsDB.length) {
+            var {toUpdate, withIdRegistered, notRegistered} = separateRegisteredData(typeSection, idsDB, excelData);
+            studensToInsert = notRegistered;
+            var studentsToUpdate = getClientsToUpdate('students',toUpdate,studentsDB);
+            if(!studensToInsert.length && !studentsToUpdate.length) {
+                return res.status(200).json({
+                    success:true,
+                    message:'Archivo cargado.', 
+                    registered:0,
+                    updateds:0,
+                    inOtherSection:withIdRegistered
+                });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:'Error al procesar el archivo'});
+    }
     //     //Separamos los alumnos con matrícula ya existente en la BD;
     //     const idsDB = info[0];
     //     const studentsDB = info[1];

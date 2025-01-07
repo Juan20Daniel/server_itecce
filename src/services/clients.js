@@ -21,3 +21,5 @@ Clients.getClientsByType = async (type) => {
         });
     });
 }
+
+module.exports = Clients;
