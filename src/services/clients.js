@@ -1,3 +1,4 @@
+const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require('../utils/mysql');
 const connection = require('../database/connection');
 const Clients = {}
 
@@ -20,6 +21,50 @@ Clients.getClientsByType = async (type) => {
             resolve(result);
         });
     });
+}
+
+Clients.savePersonalData = async (personalData, clientsToUpdate=[]) => {
+    try {
+        await beginTransactionAsync();
+        if(clientsToUpdate.length) {
+            let sql_update_personal_data = 'UPDATE clients SET name=?, firstname=?, lastname=? WHERE idClient = ?';
+            clientsToUpdate.forEach(async (student) => {
+                await queryAsync(sql_update_personal_data, [student['Nombre'], student['Apellido paterno'], student['Apellido materno'], parseInt(student['Matrícula'])]);
+            });
+        }
+        if(personalData.length) {
+            const sql_insert_personal_data = 'INSERT INTO clients (idClient,name,firstname,lastname,idSectionClients) VALUES ?';
+            await queryAsync(sql_insert_personal_data, [personalData]);
+        }
+        await commitAsync();
+        return {news:personalData.length, updateds:clientsToUpdate.length};
+    } catch (error) {
+        console.log(error);
+        await rollbackAsync();
+        throw new Error('Error al guardar la información del archivo excel');
+    }
+}
+
+Clients.saveSchoolData = async (schoolData, schoolDataToUpdate=[]) => {
+    try {
+        await beginTransactionAsync();
+        if(schoolDataToUpdate.length) {
+            let sql_update_school_data = 'UPDATE infostudens SET seccion=?, groupStudent=? WHERE idClientInfo = ?';
+            schoolDataToUpdate.forEach(async (schoolData) => {
+                await queryAsync(sql_update_school_data, [schoolData['Sección'],schoolData['Grupo'],parseInt(schoolData['Matrícula'])]);
+            });
+        }
+        if(schoolData.length) {
+            const sql_insert_school_data = 'INSERT INTO infostudens (seccion, groupStudent, idClientInfo) VALUES ?';
+            await queryAsync(sql_insert_school_data, [schoolData]);
+        }
+        await commitAsync();
+        return true;
+    } catch (error) {
+        console.log(error);
+        await rollbackAsync();
+        throw new Error('Error al guardar la información del archivo excel');
+    }
 }
 
 module.exports = Clients;

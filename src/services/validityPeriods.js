@@ -25,6 +25,7 @@ ValidityPeriods.updateAll = async (validityPeriods) => {
         await commitAsync();
         return 'Se actualizo la vigencia de las credenciales.';
     } catch (error) {
+        console.log(error);
         await rollbackAsync();
         throw new Error('Error al actualizar la vigencia de las credenciales');
     }

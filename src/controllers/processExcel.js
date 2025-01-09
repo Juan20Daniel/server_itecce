@@ -3,7 +3,6 @@ const separateRegisteredData = require('../utils/separateRegisteredData');
 const splitData = require('../utils/splitData');
 const transformToArrays = require('../utils/transformToArrays');
 const getClientsToUpdate = require('../utils/getClientsToUpdate');
-const Students = require('../services/students');
 const Clients = require('../services/clients');
 const types = {
     'students':1,
@@ -18,61 +17,86 @@ const processExcel = async (req, res) => {
         const idsDB = await Clients.getIds();
         const clientsDB = await Clients.getClientsByType(typeSection);
         let excelData = readFile(buffer);
-
         if(idsDB.length) {
-            var {toUpdate, withIdRegistered, notRegistered} = separateRegisteredData(typeSection, idsDB, excelData);
-            studensToInsert = notRegistered;
-            var studentsToUpdate = getClientsToUpdate('students',toUpdate,studentsDB);
-            if(!studensToInsert.length && !studentsToUpdate.length) {
+            //Separar clientes que ya están registrados en la base de datos de los que aún no.
+            var {registered, withIdRegistered, notRegistered} = separateRegisteredData(typeSection, idsDB, excelData);
+            excelData = notRegistered;
+            //Para sacar a los clientes que ya existen y necesitan actualizarse.
+            var clientsToUpdate = getClientsToUpdate(section,registered,clientsDB);
+            if(!excelData.length && !clientsToUpdate.length) {
                 return res.status(200).json({
-                    success:true,
                     message:'Archivo cargado.', 
-                    registered:0,
+                    news:0,
                     updateds:0,
                     inOtherSection:withIdRegistered
                 });
             }
         }
+        //Separar los datos escolares de los alumnos nuevos
+        const {schoolData, personalData} = splitData(excelData, typeSection);
+        const resultPersonalData = transformToArrays(personalData);
+        //Guardar y actualizar los datos personales en la base de datos
+        const result = await Clients.savePersonalData(resultPersonalData, clientsToUpdate);
+        //En caso de que sean alumnos los que se están cargando, guardar y actualizar los datos escolares en la base de datos.
+        if(section === 'students') {
+            var resultSchoolData = transformToArrays(schoolData);
+            await Clients.saveSchoolData(resultSchoolData, clientsToUpdate);
+        }
+        res.status(200).json({
+            message:'Archivo cargado.',
+            result,
+            inOtherSection:withIdRegistered??[]
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({message:'Error al procesar el archivo'});
     }
-    //     //Separamos los alumnos con matrícula ya existente en la BD;
-    //     const idsDB = info[0];
-    //     const studentsDB = info[1];
-    //     if(idsDB.length) {
-    //         var {toUpdate, withIdRegistered, notRegistered} = separateRegisteredData(1, idsDB, studensToInsert);
-    //         studensToInsert = notRegistered;
-    //         var studentsToUpdate = getClientsToUpdate('students',toUpdate,studentsDB);
-    //         if(!studensToInsert.length && !studentsToUpdate.length) {
-    //             return res.status(200).json({
-    //                 success:true,
-    //                 message:'Archivo cargado.', 
-    //                 registered:0,
-    //                 updateds:0,
-    //                 inOtherSection:withIdRegistered
-    //             });
-    //         }
-    //     }
-    //     // para continuar primero hay que insertar datos
-    //     const { schoolData, personalData } = splitData(studensToInsert);
-    //     const arraysPersonalData = transformToArrays(personalData);
-    //     const arraysSchoolData = transformToArrays(schoolData);
-    //     Students.insertStudents(arraysPersonalData, arraysSchoolData, studentsToUpdate, (err, result) => {
-    //         if(err) return res.status(500).json({success:false, message:'Error desconocido', err});
-    //         res.status(200).json({
-    //             success:true, 
-    //             message:'Archivo cargado.',
-    //             registered:result.newStudents,
-    //             updateds:result.updatedStudents,
-    //             //Los que existen pero pertenecen otra sección.
-    //             inOtherSection:withIdRegistered??[]
-    //         });
-    //     });
-    // });
+}
+
+const processExcel_test = async (req, res) => {
+    try {
+        const { buffer } = req.file;
+        const section = req.body.section;
+        const typeSection = types[section];
+        const idsDB = await Clients.getIds();
+        const clientsDB = await Clients.getClientsByType(typeSection);
+        let excelData = readFile(buffer);
+        if(idsDB.length) {
+            //Separar clientes que ya están registrados en la base de datos de los que aún no.
+            var {registered, withIdRegistered, notRegistered} = separateRegisteredData(typeSection, idsDB, excelData);
+            excelData = notRegistered;
+            //Para sacar a los clientes que ya existen y necesitan actualizarse.
+            var clientsToUpdate = getClientsToUpdate(section,registered,clientsDB);
+            if(!excelData.length && !clientsToUpdate.length) {
+                return res.status(200).json({
+                    message:'Archivo cargado.', 
+                    news:0,
+                    updateds:0,
+                    inOtherSection:withIdRegistered
+                });
+            }
+        }
+        //Separar los datos escolares de los alumnos nuevos
+        const {schoolData, personalData} = splitData(excelData, typeSection);
+        const resultPersonalData = transformToArrays(personalData);
+        //Guardar y actualizar los datos personales en la base de datos
+        if(section === 'students') var resultSchoolData = transformToArrays(schoolData);
+        
+        const result = await Clients.saveData(resultPersonalData, resultSchoolData, clientsToUpdate);
+        //En caso de que sean alumnos los que se están cargando, guardar y actualizar los datos escolares en la base de datos.
+        res.status(200).json({
+            message:'Archivo cargado.',
+            result,
+            inOtherSection:withIdRegistered??[]
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:'Error al procesar el archivo'});
+    }
 }
 
 
 module.exports = {
     processExcel,
+    processExcel_test
 }

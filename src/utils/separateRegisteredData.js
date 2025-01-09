@@ -2,18 +2,21 @@
 const separateRegisteredData = (type, idsDB, clientsToInsert) => {
     let notFounds = [];
     let founds = [];
-    let toUpdate = [];
+    let registered = [];
     clientsToInsert.forEach(client => {
         let result = idsDB.find(id => id.idClient === parseInt(client['Matrícula']));
         if(!result) {
+            //Separamos los que no existen
             notFounds.push(client);
         } else if(result.idSectionClients === type) {
-            toUpdate.push(client);
+            //Los que se pueden actualizar
+            registered.push(client);
         } else {
+            //Los que estan registrados en otra sección
             founds.push(client);
         }
     });
-    return {toUpdate, withIdRegistered:founds, notRegistered:notFounds};
+    return {registered, withIdRegistered:founds, notRegistered:notFounds};
 }
 
 module.exports = separateRegisteredData;
