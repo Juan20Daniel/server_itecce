@@ -4,28 +4,30 @@ const typeClients = [
     'teacher',
     'collaborator'
 ]
-const infoIdentityCard = (req, res) => {
-    const idClient = req.params.id;
-    SchoolIdentityCard.getIdInfoById(idClient, (err, info) => {
-        if(err) {
-            const errorMessage = 'Error al consultar la información de la credencial'
-            return res.status(500).json({success:false, message:errorMessage, error:err});
-        }
+const infoIdentityCard = async (req, res) => {
+    try {
+        const idClient = req.params.id;
+        const result = await SchoolIdentityCard.getIdInfoById(idClient);
+        console.log(result);
         let data = {
-            ...info[0],
-            typeClient:typeClients[info[0]?.idSectionClients-1],
-            typeCard:info[0]?.type,
+            ...result[0],
+            typeClient:typeClients[result[0]?.idSectionClients-1],
+            typeCard:result[0]?.type,
             //Para saber si se le puede hacer la credencial o no
-            isActive:info.length ? true : false
+            isActive:result.length ? true : false
         }
         if(!data.isActive) data.idClient = parseInt(idClient);
         res.status(200).json({
             message:'Información para credencial escolar',
             data
-        });
-    });
+        });   
+    } catch (error) {
+        console.log(error);
+        const errorMessage = 'Error al consultar la información de la credencial'
+        return res.status(500).json({message:errorMessage});
+    }
 }
 
 module.exports = {
-    infoIdentityCard,
+    infoIdentityCard
 }
