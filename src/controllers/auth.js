@@ -17,7 +17,7 @@ const login = async (req, res) => {
         });
         const comparePassword = bcrypt.compareSync(password, user[0].password);
         if(!comparePassword) return res.status(500).json({
-            message:'La contraseña es incorrecta, favor de verificar que esta escrita correctemente'
+            message:'La contraseña es incorrecta, favor de verificar que esta escrita correctemente.'
         });
         res.status(201).json({success:true, token:createToken(username)});
     } catch (error) {
