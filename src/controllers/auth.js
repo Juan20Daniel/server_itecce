@@ -6,7 +6,12 @@ const login = async (req, res) => {
     try {
         const { username, password } = req.params;
         const user = await Auth.getUser(username);
-        console.log(user);
+
+        // const saltRounds = 10;
+        // const salt = bcrypt.genSaltSync(saltRounds);
+        // const hash = bcrypt.hashSync(password, salt);
+        // console.log(user);
+
         if(user.length === 0) return res.status(404).json({
             message:'El usuario no fue encontrado, favor de verificar que esta escrito correctemente.'
         });
@@ -16,9 +21,9 @@ const login = async (req, res) => {
         });
         res.status(201).json({success:true, token:createToken(username)});
     } catch (error) {
+        console.log(error)
         res.status(500).json({
-            message:'Error al iniciar sesión',
-            error:err
+            message:'Error al iniciar sesión'
         });
     }
 }
