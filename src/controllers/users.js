@@ -5,16 +5,16 @@ const updateAll = async (req, res) => {
        try {
         const token = req.headers.authorization.split(' ').pop();
         const {username:usernameToken} = decodeToken(token).data;
-
+        
+        const fields = Object.keys(req.body);
+        if(!fields.length) {
+            return res.status(200).json({message:'No hay datos para actualizar'});
+        }
         if(req.body.hasOwnProperty('password')) {
             const {password} = req.body;
             req.body.password = encryptPassword(password);
         }
     
-        const fields = Object.keys(req.body);
-        if(!fields.length) {
-            return res.status(200).json({message:'No hay datos para actualizar'});
-        }
         const userData = Object.values(req.body);
         await Users.updateAll(fields, userData, usernameToken);
 
@@ -34,7 +34,7 @@ const updateAll = async (req, res) => {
         const newToken = createToken(data)
         return res.status(200).json({
             message:'Usuario actualizado',
-            toke:newToken
+            token:newToken
         });
     } catch (error) {
         console.log(error);

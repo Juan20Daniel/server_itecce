@@ -1,4 +1,4 @@
-const { exprestions } = require('../utils/expretions');
+const { expretions } = require('../utils/expretions');
 const searchField = (req, key) => {
     if(req.query.hasOwnProperty(key)) return req.query[key];
     if(req.params.hasOwnProperty(key)) return req.params[key];
@@ -10,7 +10,7 @@ const checkField = (field, message, required=true) => {
         const searchResult = searchField(req, field);
         if(!required && !searchResult) return next();
         if(!searchResult) return res.status(500).json({message});
-        if(!exprestions[field].test(searchResult)) return res.status(500).json({message});
+        if(!expretions[field].test(searchResult)) return res.status(500).json({message});
         next();
     }
 }
