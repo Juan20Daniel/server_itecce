@@ -1,10 +1,6 @@
 const readFile = require('../utils/readFile');
-const expretions = {
-    fullname:/^[a-zA-Z_0-9 ]{5,30}.(XLSX|xlsx|XLS|xls)$/,
-    offset:/^[0-9]{1,15}$/,
-    id:/^[0-9]{1,7}$/,
-    fullname_search:/^[A-ZÁÉÍÓÚÑ -]{1,40}$/
-}
+const { expretions } = require('../utils/expretions'); 
+
 const requireKeys = (section) => {
     const keys = {
         students: [
@@ -48,15 +44,15 @@ const chackIds = (data) => {
     }
 }
 const verifyExcel = (req, res, next) => {
-    if(!req.file) return res.status(500).json({success:false, message:'No se ha adjuntado ningun archivo.'});
+    if(!req.file) return res.status(500).json({message:'No se ha adjuntado ningun archivo.'});
     const { originalname, buffer } = req.file;
     const { section } = req.body;
-    if(!expretions.fullname.test(originalname)) return res.status(500).json({success:false, message:'El archivo no es válido, verifica que el nombre no tenga acentos.'});
+    if(!expretions.fullname.test(originalname)) return res.status(500).json({message:'El archivo no es válido, verifica que el nombre no tenga acentos.'});
     const dataExcel = readFile(buffer);
-    if(dataExcel.length === 0) return res.status(500).json({success:false, message:'El archivo esta vacío.'});
-    if(!verifyKeys(dataExcel, section)) return res.status(500).json({success:false, message:'Hay un error con la información del archivo.'});
+    if(dataExcel.length === 0) return res.status(500).json({message:'El archivo esta vacío.'});
+    if(!verifyKeys(dataExcel, section)) return res.status(500).json({message:'Hay un error con la información del archivo.'});
     const hasDulicates = chackIds(dataExcel);
-    if(hasDulicates) return res.status(500).json({success:false, message:`La matrículas ${hasDulicates} esta repetida en el archivo.`});
+    if(hasDulicates) return res.status(500).json({message:`La matrículas ${hasDulicates} esta repetida en el archivo.`});
     next();
 }
 module.exports = {

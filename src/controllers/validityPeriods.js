@@ -8,7 +8,7 @@ const getValidityPeriods = async (req, res) => {
         });
     } catch (error) {
         const errorMessage = 'Error al consultar la vigencia de las credenciales';
-        res.status(500).json({success:false, message:errorMessage, error:err});
+        res.status(500).json({message:errorMessage, error:err});
     }
 }
 const updateValidityPeriods = async (req, res) => {

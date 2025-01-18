@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { login } = require('../controllers/auth');
-const { check } = require('../validations/auth');
+const { checkField } = require('../validations/checkFields');
 
-router.get('/:username/:password', check, login);
+router.get('/', 
+    checkField('username', 'El usuario, no es válido.'),
+    checkField('password', 'El usuario, no es válido.'), 
+    login
+);
 
 module.exports = router;
 
