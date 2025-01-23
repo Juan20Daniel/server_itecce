@@ -8,7 +8,6 @@ const infoIdentityCard = async (req, res) => {
     try {
         const idClient = req.params.id;
         const result = await SchoolIdentityCard.getIdInfoById(idClient);
-        console.log(result);
         let data = {
             ...result[0],
             typeClient:typeClients[result[0]?.idSectionClients-1],

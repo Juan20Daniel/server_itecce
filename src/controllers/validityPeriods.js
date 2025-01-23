@@ -7,8 +7,9 @@ const getValidityPeriods = async (req, res) => {
             data:result
         });
     } catch (error) {
+        console.log(error);
         const errorMessage = 'Error al consultar la vigencia de las credenciales';
-        res.status(500).json({message:errorMessage, error:err});
+        res.status(500).json({message:errorMessage});
     }
 }
 const updateValidityPeriods = async (req, res) => {
@@ -17,7 +18,9 @@ const updateValidityPeriods = async (req, res) => {
         const result = await ValidityPeriods.updateAll({students, teachers, collaborators});
         res.status(200).json({message:result});
     } catch (error) {
-        res.status(500).json({message:error.message});
+        console.log(error);
+        const errorMessage = 'Error al actualizar la vigencia de las credenciales';
+        res.status(500).json({message:errorMessage});
     }
 }
 module.exports = {
