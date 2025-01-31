@@ -1,4 +1,4 @@
-const splitData = (clients, type) => {
+const splitData = (clients, type, careers) => {
     let schoolData = [];
     let personalData = [];
     if(clients.length) {
@@ -12,8 +12,8 @@ const splitData = (clients, type) => {
             });
             if(type === 1) {
                 schoolData.push({
-                    seccion:client['Sección'],
                     groupclient:client['Grupo'],
+                    idCareerInfo:careers.find(career =>  career.fullname === client['Sección']).idCareer,
                     idClientInfo:client['Matrícula']
                 });
             }

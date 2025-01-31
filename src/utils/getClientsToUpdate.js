@@ -1,30 +1,52 @@
-const checkName = (personDB, personFile) => {
-    if(personDB.name != personFile['Nombre'] ||
-    personDB.firstname != personFile['Apellido paterno'] ||
-    personDB.lastname != personFile['Apellido materno']) {
-        return true;
+const verifyName = (clientDB, clientFile) => {
+    let updateClient = null;
+    if(clientDB.name !== clientFile['Nombre'] ||
+    clientDB.firstname !== clientFile['Apellido paterno'] ||
+    clientDB.lastname !== clientFile['Apellido materno']) {
+        updateClient = {
+            name:clientFile['Nombre'],
+            firstname:clientFile['Apellido paterno'],
+            lastname:clientFile['Apellido materno']
+        }
     }
-    return false;
+    return updateClient;
 }
-const checkDataSchool = (personDB, personFile) => {
-    if(personDB.seccion != personFile['Sección'] ||
-    personDB.groupStudent != personFile['Grupo']) {
-        return true;
+const verifySchoolData = (clientDB, clientFile, careers) => {
+    let updateSchoolData = null;
+    let idCareer = careers.find(career => career.fullname === clientFile['Sección']).idCareer;
+    if(clientDB.idCareer !== idCareer || clientDB.groupStudent !== clientFile['Grupo']) {
+        updateSchoolData = {
+            groupStudent:clientFile['Grupo'],
+            idCareerInfo:idCareer
+        }
     }
-    return false;
+    return updateSchoolData;
 }
-const getClientsToUpdate = (type, clientsFile, clientsDB) => {
+const getClientsToUpdate = (type, clientsFile, clientsDB, careers) => {
     if(!clientsFile.length || !clientsDB.length) return [];
     let clientsToUpdate = [];
+    let resultVerifySchoolData = null;
     clientsFile.forEach(clientFile => {
+        let clientToUpdate = {};
         let result = clientsDB.find(clientDB => clientDB.idClient === parseInt(clientFile['Matrícula']));
-        if(type === 'students') {
-            if(checkName(result, clientFile) || checkDataSchool(result, clientFile)) {
-                clientsToUpdate.push(clientFile);
+        clientToUpdate.idClient = result.idClient;
+        let resultVerifyName = verifyName(result, clientFile);
+        if(resultVerifyName) {
+            clientToUpdate = {
+                ...clientToUpdate,
+                ...resultVerifyName
             }
-        } else if(checkName(result, clientFile)) {
-            clientsToUpdate.push(clientFile);
         }
+        if(type === 'students') {
+            resultVerifySchoolData = verifySchoolData(result, clientFile, careers);
+            if(resultVerifySchoolData) {
+                clientToUpdate = {
+                    ...clientToUpdate,
+                    ...resultVerifySchoolData
+                }
+            }
+        }
+        if(resultVerifyName || resultVerifySchoolData) clientsToUpdate.push(clientToUpdate);
     });
     return clientsToUpdate;
 }

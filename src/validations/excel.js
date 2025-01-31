@@ -47,7 +47,7 @@ const verifyExcel = (req, res, next) => {
     if(!req.file) return res.status(500).json({message:'No se ha adjuntado ningun archivo.'});
     const { originalname, buffer } = req.file;
     const { section } = req.body;
-    if(!expretions.fullname.test(originalname)) return res.status(500).json({message:'El archivo no es válido, verifica que el nombre no tenga acentos.'});
+    if(!expretions.fullname.test(originalname)) return res.status(500).json({message:'El nombre del archivo no es válido.'});
     const dataExcel = readFile(buffer);
     if(dataExcel.length === 0) return res.status(500).json({message:'El archivo esta vacío.'});
     if(!verifyKeys(dataExcel, section)) return res.status(500).json({message:'Hay un error con la información del archivo.'});
