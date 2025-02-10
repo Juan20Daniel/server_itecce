@@ -5,6 +5,8 @@ const expretions = {
     fullname:/^[a-zA-Z_0-9 -.]{5,30}.(XLSX|xlsx|XLS|xls)$/,
     username:/^[a-zA-ZóÓáÁéÉíÍúÚñÑ0-9 ]{5,30}$/,
     password:/^.{8,30}$/,
+    abridging:/^[A-ZÁÉÍÓÚÑ() .]{10,50}$/,
+    id:/^[0-9]+$/,
 }
 
 module.exports = {expretions}

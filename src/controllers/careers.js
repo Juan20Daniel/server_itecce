@@ -13,6 +13,22 @@ const getCareers = async (req, res) => {
     }
 }
 
+const updateAbridging = async (req, res) => {
+    try {
+        const { id, abridging } = req.body;
+        await Careers.updateAbridging(id, abridging);
+        res.status(200).json({
+            message:'Se actualizo la abreviatura de la carrera',
+            data:{ id, abridging }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:'Error al actualizar la abreviatura.'});
+    }
+}
+
+
 module.exports = {
-    getCareers
+    getCareers,
+    updateAbridging
 }

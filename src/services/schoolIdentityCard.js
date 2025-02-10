@@ -2,7 +2,7 @@ const connection = require('../database/connection');
 const SchoolIdentityCard = {};
 
 SchoolIdentityCard.getIdInfoById = (id) => {
-    const sql = `SELECT idClient, name, firstname, lastname, idSectionClients, abridging as seccion, groupStudent FROM clients 
+    const sql = `SELECT idClient, name, firstname, lastname, idSectionClients, idCareer, groupStudent FROM clients 
     LEFT JOIN infostudens ON clients.idClient = infostudens.idClientInfo 
     LEFT JOIN careers ON infoStudens.idCareerInfo = careers.idCareer WHERE idClient = ?`;
     return new Promise((resolve, reject) => {
