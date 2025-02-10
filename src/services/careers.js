@@ -21,4 +21,14 @@ Careers.saveCareers = (careers) => {
     });
 }
 
+Careers.updateAbridging = (id, abridging) => {
+    const sql = 'UPDATE careers SET abridging=? WHERE idCareer=?';
+    return new Promise((resolve, reject) => {
+        connection.query(sql, [abridging, id], (err, result) => {
+            if(err) return reject(err);
+            resolve(result);
+        });
+    });
+}
+
 module.exports = Careers;
