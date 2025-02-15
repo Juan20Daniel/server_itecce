@@ -2,7 +2,7 @@ const {rollbackAsync, commitAsync, queryAsync, beginTransactionAsync } = require
 const connection = require('../database/connection');
 const Clients = {}
 
-Clients.getIds = async () => {
+Clients.getIds = () => {
     const sql = 'SELECT idClient, idSectionClients FROM clients';
     return new Promise((resolve, reject) => {
         connection.query(sql, (err, result) => {
@@ -67,6 +67,26 @@ Clients.saveData = async (personalData, schoolData=[], clientsToUpdate=[]) => {
         await rollbackAsync();
         throw new Error('Error al guardar la información del archivo excel');
     }
+}
+
+Clients.removeClientsByType = (type) => {
+    const sql = 'DELETE FROM clients WHERE idSectionClients=?';
+    return new Promise((resolve, reject) => {
+        connection.query(sql, [type], (err, result) => {
+            if(err) return reject(err);
+            resolve(result);
+        });
+    });
+}
+
+Clients.removeAll = () => {
+    const sql = 'DELETE FROM clients';
+    return new Promise((resolve, reject) => {
+        connection.query(sql, (err, result) => {
+            if(err) return reject(err);
+            resolve(result);
+        });
+    });
 }
 
 module.exports = Clients;

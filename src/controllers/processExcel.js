@@ -42,7 +42,6 @@ const processCareers = async (excelData) => {
     }
 }
 
-
 const processExcel = async (req, res) => {
     try {
         const { buffer } = req.file;
