@@ -2,7 +2,7 @@ const connection = require('../database/connection');
 const Careers = {}
 
 Careers.getCareers = () => {
-    const sql = 'SELECT idCareer, fullname, abridging FROM careers';
+    const sql = 'SELECT idCareer, fullname, abridging, duration FROM careers';
     return new Promise((resolve, reject) => {
         connection.query(sql, (err, result) => {
             if(err) return reject(err);
@@ -21,10 +21,10 @@ Careers.saveCareers = (careers) => {
     });
 }
 
-Careers.updateAbridging = (id, abridging) => {
-    const sql = 'UPDATE careers SET abridging=? WHERE idCareer=?';
+Careers.updateCareer = (id, abridging, duration) => {
+    const sql = 'UPDATE careers SET abridging=?, duration=? WHERE idCareer=?';
     return new Promise((resolve, reject) => {
-        connection.query(sql, [abridging, id], (err, result) => {
+        connection.query(sql, [abridging, duration, id], (err, result) => {
             if(err) return reject(err);
             resolve(result);
         });

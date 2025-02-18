@@ -7,6 +7,7 @@ const expretions = {
     password:/^.{8,30}$/,
     abridging:/^[A-ZÁÉÍÓÚÑ() .]{10,50}$/,
     id:/^[0-9]+$/,
-    type:/^[123]{1}$/
+    type:/^[123]{1}$/,
+    duration: /^[0-9]{1,2}$/
 }
 module.exports = {expretions}
