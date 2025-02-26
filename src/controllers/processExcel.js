@@ -15,12 +15,12 @@ const types = {
 
 const processCareers = async (excelData) => {
     try {
-        let careersDB = await Careers.getCareers();
+        let careersDB = await Careers.getAll();
         const careersExcel = removeDuplicateCareers(excelData);
         if(!careersDB.length) {
             const rowsDB = getRowsDB(careersExcel);
-            await Careers.saveCareers(rowsDB);
-            careersDB = await Careers.getCareers();
+            await Careers.save(rowsDB);
+            careersDB = await Careers.getAll();
             return careersDB;
         } 
         const careersArray = transformToArrays(careersDB).flat();
@@ -32,8 +32,8 @@ const processCareers = async (excelData) => {
         }
         if(newCareers.length) {
             const rowsDB = getRowsDB(newCareers);
-            await Careers.saveCareers(rowsDB);
-            careersDB = await Careers.getCareers();
+            await Careers.save(rowsDB);
+            careersDB = await Careers.getAll();
         }
         return careersDB;
     } catch (error) {
@@ -82,6 +82,7 @@ const processExcel = async (req, res) => {
             inOtherSection:withIdRegistered??[]
         });
     } catch (error) {
+        console.log(error);
         res.status(500).json({message:error.message});
     }
 }

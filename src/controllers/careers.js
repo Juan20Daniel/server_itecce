@@ -2,7 +2,7 @@ const Careers = require('../services/careers');
 
 const getCareers = async (req, res) => {
     try {
-        const career = await Careers.getCareers();
+        const career = await Careers.getAll();
         res.status(200).json({
             message:'Carreras registradas en la base de datos',
             data:career
@@ -16,9 +16,9 @@ const getCareers = async (req, res) => {
 const updateCareer = async (req, res) => {
     try {
         const { id, abridging, duration } = req.body;
-        await Careers.updateCareer(id, abridging, duration);
+        await Careers.update(id, abridging, duration);
         res.status(200).json({
-            message:'Se actualizo la carrera de forma correcta',
+            message:'Se actualizó la carrera de forma correcta',
             data:{ 
                 id, 
                 abridging, 
@@ -30,9 +30,21 @@ const updateCareer = async (req, res) => {
         res.status(500).json({message:'Error al actualizar la carrera.'});
     }
 }
-
+const removeCareer = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Careers.remove(id);
+        res.status(200).json({
+            message:'Se eliminó la carrera de forma correcta',
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:'Error al eliminar la carrera.'});
+    }
+}
 
 module.exports = {
     getCareers,
-    updateCareer
+    updateCareer,
+    removeCareer
 }
